@@ -19,7 +19,7 @@ const getShow = (query, cb) => {
   const getShowDetails=(showId)=>{
     const url=`${baseUrl}/shows/${showId}`;
     return new Promise((resolve,reject)=>{
-        fetch(url)
+        fetch(url) //resolve(data)
         .then(resp=>resp.json())
         .then(data=>resolve(data))
         .catch((err)=>reject(err));

@@ -8,9 +8,13 @@ let timeOutSearch = null;
 
 const lstTvShows = document.querySelector("#lstTvShows");
 const dropdownMenu = document.getElementById("dropdown-menu");
+const dramaTitle=document.querySelector("#dramaTitle");
 const dramaDiv=document.querySelector("#drama");
 const comedyDiv=document.querySelector("#comedy");
 const comedyTitle=document.querySelector("#comedyTitle");
+const fantasyDiv=document.querySelector("#fantasy");
+const fantasyTitle=document.querySelector("#fantasyTitle");
+
 
 dropdownMenu.addEventListener("click", (e) => {
   e.preventDefault();
@@ -18,10 +22,13 @@ dropdownMenu.addEventListener("click", (e) => {
     const selectedShowId = e.target.id;
     getEpisodes(selectedShowId, (episodes) => {
       lstTvShows.innerHTML = "";
-      episodes.forEach((episode) => {
+      const limitedEpisodes=episodes.slice(0,24);
+      limitedEpisodes.forEach((episode) => {
         const episodeCard = createEpisodeCard(episode);
         lstTvShows.insertAdjacentHTML("beforeend", episodeCard);
       });
+      const firstDivElement=document.querySelector("#lstTvShows");
+      firstDivElement.setAttribute("style","margin-top:8rem"); 
     });
   }
 });
@@ -51,10 +58,16 @@ document.querySelector("#txtSearch").addEventListener("input", (e) => {
     getShow(query, (films) => {
       createMovies(films);
       dramaDiv.classList.add("d-none");
+      dramaTitle.classList.add("d-none");
       comedyDiv.classList.add("d-none");
       comedyTitle.classList.add("d-none");
+      fantasyDiv.classList.add("d-none");
+      fantasyTitle.classList.add("d-none");
+      
     });
   }, 500);
+  const firstDivElement=document.querySelector("#lstTvShows");
+  firstDivElement.setAttribute("style","margin-top:8rem"); 
   // if(!query){
   //   dramaDiv.classList.remove("d-none");
   //   comedyDiv.classList.remove("d-none");
@@ -71,7 +84,7 @@ const createPeopleList = (people) => {
 
   limitedPeople.forEach((person) => {
     lstTvShows.innerHTML += `
-    <div class="col mb-4">
+    <div class="col mb-4" style="margin-top:8rem">
         <div class="card h-100" style="cursor:pointer">
           <img src=${person.image.original} class="card-img-top" alt="${person.name}" />
           <div class="card-body text-light" style="background-color: #3C948B;">
@@ -89,29 +102,36 @@ document.querySelector("#people").addEventListener("click", (e) => {
 
 const createShows = (data) => {
   lstTvShows.innerHTML = "";
-  data.forEach((show) => {
+  const limitedData=data.slice(0,20);
+  limitedData.forEach((show,index) => {
     const showCard = createShowCard(show);
     lstTvShows.insertAdjacentHTML("afterbegin", showCard);
   });
+  const firstDivElement=document.querySelector("#lstTvShows");
+  firstDivElement.setAttribute("style","margin-top:8rem");
 };
 
-const getDrama = () => {
+const setGenres = () => {
   const dramaDiv = document.querySelector("#drama");
-
+  const comedyDiv = document.querySelector("#comedy");
+  const fantasyDiv = document.querySelector("#fantasy");
   getShowList()
+  
     .then((data) => {
-      const dramaShows = (data.filter((show) => show.genres.includes("Drama"))).slice(0,12);
-      console.log(dramaShows);
-      const titleDrama = document.createElement("h1");
-      dramaDiv.classList.add("text-dark");
-      titleDrama.innerText = "DRAMA";
-      titleDrama.classList.add("mb-0");
-      dramaDiv.insertAdjacentElement("afterbegin", titleDrama);
-      createShows(dramaShows, dramaDiv);
-    })
-    .catch((error) => {
-      console.log("Error fetching show list:", error);
-    });
+        const dramaTitle=document.querySelector("#dramaTitle");
+        const dramaShows = (data.filter((show) => show.genres.includes("Drama"))).slice(0,12);
+        let dramaShowCard = "";
+        const h1 = document.createElement("h1"); 
+        h1.innerText = "DRAMA";
+        dramaTitle.insertAdjacentElement("afterbegin", h1);
+
+        dramaShows.forEach((item)=>{
+          dramaShowCard += createShowCard(item);
+          dramaDiv.classList.add("text-dark");
+          dramaDiv.innerHTML = dramaShowCard;
+        })
+        
+      })
     getShowList()
   .then((data) => {
     const comedyTitle=document.querySelector("#comedyTitle");
@@ -123,22 +143,34 @@ const getDrama = () => {
 
     comedyShows.forEach((item) => {
       comedyShowCard += createShowCard(item);
-      const comedyDiv = document.querySelector("#comedy");
-
       comedyDiv.classList.add("text-dark");
-      comedyDiv.innerHTML = comedyShowCard;
-      console.log(comedyShowCard);
+      comedyDiv.innerHTML = comedyShowCard;  
     });
-    console.log(comedyShowCard);
   })
-  .catch((error) => {
-    console.log("error fetching showlist", error);
-  });
+  getShowList()
+  .then((data) => {
+    const fantasyTitle=document.querySelector("#fantasyTitle");
+    const fantasyShows = (data.filter((show) => show.genres.includes("Fantasy"))).slice(0,12);
+    let fantasyShowCard = "";
+    const h1 = document.createElement("h1");
+    h1.innerText = "FANTASY";
+    fantasyTitle.insertAdjacentElement("afterbegin",h1);
+
+    fantasyShows.forEach((item) => {
+      fantasyShowCard += createShowCard(item);
+      fantasyDiv.classList.add("text-dark");
+      fantasyDiv.innerHTML = fantasyShowCard;
+      console.log(fantasyShowCard);
+    });
+    console.log(fantasyShowCard);
+  })
+    .catch((error) => {
+      console.log("Error fetching show list:", error);
+    });
 };
 
 window.addEventListener("DOMContentLoaded", () => {
-  getDrama();
- // getComedy();
+  setGenres();
 });
 
 const createShowCard = (item) => {
