@@ -14,6 +14,8 @@ const comedyDiv=document.querySelector("#comedy");
 const comedyTitle=document.querySelector("#comedyTitle");
 const fantasyDiv=document.querySelector("#fantasy");
 const fantasyTitle=document.querySelector("#fantasyTitle");
+const logoImg=document.querySelector("#logo");
+const txtSearch=document.querySelector("#txtSearch");
 
 
 dropdownMenu.addEventListener("click", (e) => {
@@ -55,27 +57,25 @@ document.querySelector("#txtSearch").addEventListener("input", (e) => {
   if (timeOutSearch) clearTimeout(timeOutSearch);
 
   timeOutSearch = setTimeout(() => {
-    getShow(query, (films) => {
-      createMovies(films);
+    if (query === "") {
+      setGenres()
+    } else {
+      getShow(query, (films) => {
+        createMovies(films);
       dramaDiv.classList.add("d-none");
       dramaTitle.classList.add("d-none");
       comedyDiv.classList.add("d-none");
       comedyTitle.classList.add("d-none");
       fantasyDiv.classList.add("d-none");
       fantasyTitle.classList.add("d-none");
-      
-    });
+      });
+    }
   }, 500);
+
   const firstDivElement=document.querySelector("#lstTvShows");
   firstDivElement.setAttribute("style","margin-top:8rem"); 
-  // if(!query){
-  //   dramaDiv.classList.remove("d-none");
-  //   comedyDiv.classList.remove("d-none");
-  //   comedyTitle.classList.remove("d-none");
-  // }
-
 });
-
+         
 const createPeopleList = (people) => {
   lstTvShows.innerHTML = "";
 
@@ -228,3 +228,11 @@ const createMovieCard = (item) => {
         </div>
   </div>`;
 };
+
+document.querySelector(".logo").addEventListener("click", (e) => {
+  getShowList()
+  .then((data) => createShows(data))
+  .catch((error) =>{
+    console.log("error fetching show lis",error);
+  })
+});
